@@ -1,0 +1,2 @@
+SyntaxError in line 29 of /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/Snakefile:
+Expecting rule keyword, comment or docstrings inside a rule definition. (Snakefile, line 29)

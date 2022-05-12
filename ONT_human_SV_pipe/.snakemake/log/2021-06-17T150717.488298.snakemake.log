@@ -1,0 +1,109 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 16
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	all
+	1	make_minimap2_index
+	1	merge_SVs
+	1	minimap2_alignment
+	1	run_cuteSV
+	1	run_sniffles
+	1	run_svim
+	7
+Select jobs to execute...
+
+[Thu Jun 17 15:07:17 2021]
+rule make_minimap2_index:
+    input: /home/daruibio/test77/Database/references/homo_sapiens/hg38.fa
+    output: /home/daruibio/test77/Database/references/homo_sapiens/hg38.mmi
+    jobid: 4
+
+[Thu Jun 17 15:08:08 2021]
+Finished job 4.
+1 of 7 steps (14%) done
+Select jobs to execute...
+
+[Thu Jun 17 15:08:08 2021]
+rule minimap2_alignment:
+    input: /home/daruibio/test77/Database/references/homo_sapiens/hg38.mmi, /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.fastq.gz
+    output: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.minimap2.bam
+    log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/log/test.minimap2_alignment.log
+    jobid: 3
+    benchmark: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/benchmark/test.minimap2_alignment.tsv
+    wildcards: workdir=/home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data, sample=test
+    threads: 16
+
+[Thu Jun 17 15:09:27 2021]
+Finished job 3.
+2 of 7 steps (29%) done
+Select jobs to execute...
+
+[Thu Jun 17 15:09:27 2021]
+rule run_sniffles:
+    input: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.minimap2.bam
+    output: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.sniffles.vcf
+    log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/log/test.sniffles.log
+    jobid: 2
+    benchmark: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/benchmark/test.sniffles.tsv
+    wildcards: workdir=/home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data, sample=test
+    threads: 16
+
+[Thu Jun 17 15:09:52 2021]
+Finished job 2.
+3 of 7 steps (43%) done
+Select jobs to execute...
+
+[Thu Jun 17 15:09:52 2021]
+rule run_cuteSV:
+    input: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.minimap2.bam, /home/daruibio/test77/Database/references/homo_sapiens/hg38.fa
+    output: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.cutesv.vcf, /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test_cutesv_calls
+    log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/log/test.cutesv.log
+    jobid: 5
+    benchmark: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/benchmark/test.cutesv.tsv
+    wildcards: workdir=/home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data, sample=test
+    threads: 16
+
+[Thu Jun 17 15:10:14 2021]
+Finished job 5.
+4 of 7 steps (57%) done
+Select jobs to execute...
+
+[Thu Jun 17 15:10:14 2021]
+rule run_svim:
+    input: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.minimap2.bam, /home/daruibio/test77/Database/references/homo_sapiens/hg38.fa
+    output: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test_svim_calls, /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test_svim_calls/variants.vcf
+    log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/log/test.svim.log
+    jobid: 6
+    benchmark: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/benchmark/test.svim.tsv
+    wildcards: workdir=/home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data, sample=test
+
+[Thu Jun 17 15:10:28 2021]
+Finished job 6.
+5 of 7 steps (71%) done
+Select jobs to execute...
+
+[Thu Jun 17 15:10:28 2021]
+rule merge_SVs:
+    input: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.sniffles.vcf, /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.cutesv.vcf, /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test_svim_calls/variants.vcf
+    output: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.merged_1callers.vcf, /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.merged_2callers.vcf, /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.merged_3callers.vcf, /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test_vcf_names
+    log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/log/test.merge_SVs.log
+    jobid: 1
+    benchmark: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/benchmark/test.merge_SVs.tsv
+    wildcards: workdir=/home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data, sample=test
+
+[Thu Jun 17 15:10:29 2021]
+Finished job 1.
+6 of 7 steps (86%) done
+Select jobs to execute...
+
+[Thu Jun 17 15:10:29 2021]
+localrule all:
+    input: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.merged_3callers.vcf
+    jobid: 0
+
+[Thu Jun 17 15:10:29 2021]
+Finished job 0.
+7 of 7 steps (100%) done
+Complete log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/.snakemake/log/2021-06-17T150717.488298.snakemake.log

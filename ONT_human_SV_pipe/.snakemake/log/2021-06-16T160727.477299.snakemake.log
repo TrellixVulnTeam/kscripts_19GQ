@@ -1,0 +1,53 @@
+Building DAG of jobs...
+Job counts:
+	count	jobs
+	1	all
+	1	make_minimap2_index
+	1	minimap2_alignment
+	1	run_cuteSV
+	1	run_sniffles
+	5
+
+[Wed Jun 16 16:07:28 2021]
+rule make_minimap2_index:
+    input: /home/daruibio/test77/Database/references/homo_sapiens/hg38.fa
+    output: /home/daruibio/test77/Database/references/homo_sapiens/hg38.mmi
+    jobid: 3
+
+
+[Wed Jun 16 16:07:28 2021]
+rule minimap2_alignment:
+    input: /home/daruibio/test77/Database/references/homo_sapiens/hg38.mmi, /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.fastq.gz
+    output: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.minimap2.bam
+    log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/log/test.minimap2_alignment.log
+    jobid: 2
+    benchmark: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/benchmark/test.minimap2_alignment.tsv
+    wildcards: workdir=/home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data, sample=test
+
+
+[Wed Jun 16 16:07:28 2021]
+rule run_sniffles:
+    input: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.minimap2.bam
+    output: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.sniffles.vcf
+    log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/log/test.sniffles.log
+    jobid: 1
+    benchmark: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/benchmark/test.sniffles.tsv
+    wildcards: workdir=/home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data, sample=test
+
+
+[Wed Jun 16 16:07:28 2021]
+rule run_cuteSV:
+    input: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.minimap2.bam, /home/daruibio/test77/Database/references/homo_sapiens/hg38.fa
+    output: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.cutesv.vcf, /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test_cutesv_calls
+    log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/log/test.cutesv.log
+    jobid: 4
+    benchmark: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/benchmark/test.cutesv.tsv
+    wildcards: workdir=/home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data, sample=test
+
+RuleException in line 89 of /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/Snakefile:
+'InputFiles' object has no attribute ':2'
+  File "/home/daruibio/test77/miniconda3/envs/biosoft_py37/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 140, in run_jobs
+  File "/home/daruibio/test77/miniconda3/envs/biosoft_py37/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 145, in run
+  File "/home/daruibio/test77/miniconda3/envs/biosoft_py37/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 156, in _run
+  File "/home/daruibio/test77/miniconda3/envs/biosoft_py37/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 176, in printjob
+  File "/home/daruibio/test77/miniconda3/envs/biosoft_py37/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 162, in printjob

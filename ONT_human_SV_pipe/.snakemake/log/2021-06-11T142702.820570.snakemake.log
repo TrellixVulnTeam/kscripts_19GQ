@@ -1,0 +1,31 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	all
+	1	make_minimap2_index
+	2
+Select jobs to execute...
+
+[Fri Jun 11 14:27:03 2021]
+rule make_minimap2_index:
+    input: /home/daruibio/test77/Database/references/homo_sapiens/hg38.fa
+    output: test.out
+    jobid: 1
+
+[Fri Jun 11 14:27:03 2021]
+Finished job 1.
+1 of 2 steps (50%) done
+Select jobs to execute...
+
+[Fri Jun 11 14:27:03 2021]
+localrule all:
+    input: test.out
+    jobid: 0
+
+[Fri Jun 11 14:27:03 2021]
+Finished job 0.
+2 of 2 steps (100%) done
+Complete log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/.snakemake/log/2021-06-11T142702.820570.snakemake.log

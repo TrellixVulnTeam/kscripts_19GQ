@@ -1,0 +1,64 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 16
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	all
+	1	merge_SVs
+	1	minimap2_alignment
+	1	run_cuteSV
+	1	run_sniffles
+	1	run_svim
+	6
+Select jobs to execute...
+
+[Wed Jun 16 17:01:18 2021]
+rule minimap2_alignment:
+    input: /home/daruibio/test77/Database/references/homo_sapiens/hg38.mmi, /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.fastq.gz
+    output: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.minimap2.bam
+    log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/log/test.minimap2_alignment.log
+    jobid: 3
+    benchmark: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/benchmark/test.minimap2_alignment.tsv
+    wildcards: workdir=/home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data, sample=test
+    threads: 14
+
+[Wed Jun 16 17:03:46 2021]
+Finished job 3.
+1 of 6 steps (17%) done
+Select jobs to execute...
+
+[Wed Jun 16 17:03:46 2021]
+rule run_sniffles:
+    input: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.minimap2.bam
+    output: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.sniffles.vcf
+    log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/log/test.sniffles.log
+    jobid: 2
+    benchmark: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/benchmark/test.sniffles.tsv
+    wildcards: workdir=/home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data, sample=test
+    threads: 14
+
+
+[Wed Jun 16 17:03:46 2021]
+rule run_svim:
+    input: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.minimap2.bam, /home/daruibio/test77/Database/references/homo_sapiens/hg38.fa
+    output: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test_svim_calls, /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test_svim_calls/variants.vcf
+    log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/log/test.svim.log
+    jobid: 6
+    benchmark: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/benchmark/test.svim.tsv
+    wildcards: workdir=/home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data, sample=test
+
+ImproperOutputException in line 108 of /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/Snakefile:
+Outputs of incorrect type (directories when expecting files or vice versa). Output directories must be flagged with directory(). for rule run_svim:
+/home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test_svim_calls
+  File "/home/daruibio/test77/miniconda3/envs/biosoft_py37/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 589, in handle_job_success
+  File "/home/daruibio/test77/miniconda3/envs/biosoft_py37/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 259, in handle_job_success
+Removing output files of failed job run_svim since they might be corrupted:
+/home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test_svim_calls, /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test_svim_calls/variants.vcf
+Skipped removing non-empty directory /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test_svim_calls
+[Wed Jun 16 17:24:02 2021]
+Finished job 2.
+2 of 6 steps (33%) done
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/.snakemake/log/2021-06-16T170117.822188.snakemake.log

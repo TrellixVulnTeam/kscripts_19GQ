@@ -1,0 +1,4 @@
+Building DAG of jobs...
+MissingInputException in line 23 of /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/Snakefile:
+Missing input files for rule make_minimap2_index:
+/home/daruibio/test77/Database/references/homo_sapiens/hg38.mmi

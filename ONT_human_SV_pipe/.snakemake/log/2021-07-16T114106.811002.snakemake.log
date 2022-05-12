@@ -1,0 +1,39 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 15
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	all
+	1	remake_vcf
+	1	run_annotsv
+	3
+Select jobs to execute...
+
+[Fri Jul 16 11:41:07 2021]
+rule remake_vcf:
+    input: results/test/merged_2callers_filt.vcf
+    output: results/test/merged_2callers_remake.vcf
+    log: results/test/log/remake_vcf.log
+    jobid: 2
+    benchmark: results/test/benchmark/remake_vcf.tsv
+    wildcards: workdir=results, sample=test
+
+[Fri Jul 16 11:41:07 2021]
+Error in rule remake_vcf:
+    jobid: 2
+    output: results/test/merged_2callers_remake.vcf
+    log: results/test/log/remake_vcf.log (check log file(s) for error message)
+
+RuleException:
+CalledProcessError in line 216 of /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/Snakefile:
+Command 'set -euo pipefail;  /home/daruibio/test77/miniconda3/envs/biosoft_py37/bin/python3.7 /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/.snakemake/scripts/tmphgji_auu.remake_SVs_vcf.py' returned non-zero exit status 1.
+  File "/home/daruibio/test77/miniconda3/envs/biosoft_py37/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 2322, in run_wrapper
+  File "/home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/Snakefile", line 216, in __rule_remake_vcf
+  File "/home/daruibio/test77/miniconda3/envs/biosoft_py37/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 574, in _callback
+  File "/home/daruibio/test77/miniconda3/envs/biosoft_py37/lib/python3.7/concurrent/futures/thread.py", line 57, in run
+  File "/home/daruibio/test77/miniconda3/envs/biosoft_py37/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 560, in cached_or_run
+  File "/home/daruibio/test77/miniconda3/envs/biosoft_py37/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 2392, in run_wrapper
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/.snakemake/log/2021-07-16T114106.811002.snakemake.log

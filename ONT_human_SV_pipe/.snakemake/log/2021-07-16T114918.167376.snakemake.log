@@ -1,0 +1,49 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 15
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	all
+	1	remake_vcf
+	1	run_annotsv
+	3
+Select jobs to execute...
+
+[Fri Jul 16 11:49:18 2021]
+rule remake_vcf:
+    input: results/test/merged_2callers_filt.vcf
+    output: results/test/merged_2callers_remake.vcf
+    log: results/test/log/remake_vcf.log
+    jobid: 2
+    benchmark: results/test/benchmark/remake_vcf.tsv
+    wildcards: workdir=results, sample=test
+
+[Fri Jul 16 11:49:18 2021]
+Finished job 2.
+1 of 3 steps (33%) done
+Select jobs to execute...
+
+[Fri Jul 16 11:49:18 2021]
+rule run_annotsv:
+    input: results/test/merged_2callers_remake.vcf
+    output: results/test/merged_2callers_remake.hg38_annotsv.tsv
+    log: results/test/log/run_annotsv.log
+    jobid: 1
+    benchmark: results/test/benchmark/run_annotsv.tsv
+    wildcards: workdir=results, sample=test
+
+[Fri Jul 16 11:49:23 2021]
+Finished job 1.
+2 of 3 steps (67%) done
+Select jobs to execute...
+
+[Fri Jul 16 11:49:23 2021]
+localrule all:
+    input: results/test/merged_2callers_remake.hg38_annotsv.tsv
+    jobid: 0
+
+[Fri Jul 16 11:49:23 2021]
+Finished job 0.
+3 of 3 steps (100%) done
+Complete log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/.snakemake/log/2021-07-16T114918.167376.snakemake.log

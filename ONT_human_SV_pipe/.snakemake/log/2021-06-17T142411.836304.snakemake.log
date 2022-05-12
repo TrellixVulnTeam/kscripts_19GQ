@@ -1,0 +1,34 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 16
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	all
+	1	merge_SVs
+	1	run_cuteSV
+	1	run_svim
+	4
+Select jobs to execute...
+
+[Thu Jun 17 14:24:12 2021]
+rule run_cuteSV:
+    input: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.minimap2.bam, /home/daruibio/test77/Database/references/homo_sapiens/hg38.fa
+    output: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.cutesv.vcf, /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test_cutesv_calls
+    log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/log/test.cutesv.log
+    jobid: 5
+    benchmark: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/benchmark/test.cutesv.tsv
+    wildcards: workdir=/home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data, sample=test
+    threads: 16
+
+ImproperOutputException in line 87 of /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/Snakefile:
+Outputs of incorrect type (directories when expecting files or vice versa). Output directories must be flagged with directory(). for rule run_cuteSV:
+/home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test_cutesv_calls
+  File "/home/daruibio/test77/miniconda3/envs/biosoft_py37/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 589, in handle_job_success
+  File "/home/daruibio/test77/miniconda3/envs/biosoft_py37/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 259, in handle_job_success
+Removing output files of failed job run_cuteSV since they might be corrupted:
+/home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.cutesv.vcf, /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test_cutesv_calls
+Skipped removing non-empty directory /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test_cutesv_calls
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/.snakemake/log/2021-06-17T142411.836304.snakemake.log

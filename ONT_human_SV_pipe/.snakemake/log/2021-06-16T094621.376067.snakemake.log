@@ -1,0 +1,3 @@
+NameError in line 22 of /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/Snakefile:
+name 'workdir' is not defined
+  File "/home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/Snakefile", line 22, in <module>

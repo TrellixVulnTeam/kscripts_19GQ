@@ -1,0 +1,2 @@
+SyntaxError in line 214 of /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/Snakefile:
+Unexpected keyword scripts in rule definition (Snakefile, line 214)

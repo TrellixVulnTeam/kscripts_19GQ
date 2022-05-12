@@ -1,0 +1,3 @@
+WildcardError in line 23 of /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/Snakefile:
+No values given for wildcard 'workdir'.
+  File "/home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/Snakefile", line 23, in <module>

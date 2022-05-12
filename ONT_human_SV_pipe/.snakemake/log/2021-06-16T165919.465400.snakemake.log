@@ -1,0 +1,4 @@
+Building DAG of jobs...
+MissingInputException in line 124 of /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/Snakefile:
+Missing input files for rule merge_SVs:
+/home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test_svim_calls/variants.vcf

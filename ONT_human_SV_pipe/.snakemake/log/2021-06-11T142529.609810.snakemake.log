@@ -1,0 +1,20 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	all
+	1	make_minimap2_index
+	2
+Select jobs to execute...
+
+[Fri Jun 11 14:25:29 2021]
+rule make_minimap2_index:
+    input: /home/daruibio/test77/Database/references/homo_sapiens/hg38.fa
+    output: test.out
+    jobid: 1
+
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/.snakemake/log/2021-06-11T142529.609810.snakemake.log

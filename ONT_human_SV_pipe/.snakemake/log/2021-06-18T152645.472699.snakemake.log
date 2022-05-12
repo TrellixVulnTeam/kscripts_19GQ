@@ -1,0 +1,23 @@
+Building DAG of jobs...
+Job counts:
+	count	jobs
+	1	all
+	1	filter_by_region
+	2
+
+[Fri Jun 18 15:26:45 2021]
+rule filter_by_region:
+    input: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.merged_3callers.vcf, /home/daruibio/test77/Database/UCSC/hg38/UCSC_gap.hg38.bed, /home/daruibio/test77/Database/UCSC/hg38/UCSC_centromeres.hg38.bed, /home/daruibio/test77/Database/UCSC/hg38/UCSC_telomeres.hg38.bed, /home/daruibio/test77/Database/UCSC/hg38/UCSC_segmental_dups.hg38.bed, /home/daruibio/test77/Database/UCSC/hg38/UCSC_single_repeats.hg38.bed
+    output: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.merged_3callers_filt.vcf
+    log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/log/test.filter_by_region.log
+    jobid: 1
+    benchmark: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/benchmark/test.filter_by_region.tsv
+    wildcards: workdir=/home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data, sample=test
+
+RuleException in line 153 of /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/Snakefile:
+NameError: The name 'workdir' is unknown in this context. Did you mean 'wildcards.workdir'?
+  File "/home/daruibio/test77/miniconda3/envs/biosoft_py37/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 140, in run_jobs
+  File "/home/daruibio/test77/miniconda3/envs/biosoft_py37/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 145, in run
+  File "/home/daruibio/test77/miniconda3/envs/biosoft_py37/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 156, in _run
+  File "/home/daruibio/test77/miniconda3/envs/biosoft_py37/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 176, in printjob
+  File "/home/daruibio/test77/miniconda3/envs/biosoft_py37/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 162, in printjob

@@ -1,0 +1,29 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	all
+	1	make_minimap2_index
+	2
+Select jobs to execute...
+
+[Fri Jun 11 14:14:11 2021]
+rule make_minimap2_index:
+    input: /home/daruibio/test77/Database/references/homo_sapiens/hg38.fa
+    output: /home/daruibio/test77/Database/references/homo_sapiens/hg38.mmi
+    log: test.log
+    jobid: 1
+
+Waiting at most 5 seconds for missing files.
+MissingOutputException in line 23 of /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/Snakefile:
+Job Missing files after 5 seconds:
+/home/daruibio/test77/Database/references/homo_sapiens/hg38.mmi
+This might be due to filesystem latency. If that is the case, consider to increase the wait time with --latency-wait.
+Job id: 1 completed successfully, but some output files are missing. 1
+  File "/home/daruibio/test77/miniconda3/envs/biosoft_py37/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 589, in handle_job_success
+  File "/home/daruibio/test77/miniconda3/envs/biosoft_py37/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 259, in handle_job_success
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/.snakemake/log/2021-06-11T141410.790225.snakemake.log

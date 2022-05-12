@@ -1,0 +1,3 @@
+NameError in line 25 of /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/Snakefile:
+name 'clue' is not defined
+  File "/home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/Snakefile", line 25, in <module>

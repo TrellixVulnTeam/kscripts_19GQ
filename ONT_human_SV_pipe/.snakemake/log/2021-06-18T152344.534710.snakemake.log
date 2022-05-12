@@ -1,0 +1,83 @@
+Building DAG of jobs...
+File path /home/daruibio/test77/Database/UCSC/hg38//UCSC_gap.hg38.bed contains double '/'. This is likely unintended. It can also lead to inconsistent results of the file-matching approach used by Snakemake.
+File path /home/daruibio/test77/Database/UCSC/hg38//UCSC_centromeres.hg38.bed contains double '/'. This is likely unintended. It can also lead to inconsistent results of the file-matching approach used by Snakemake.
+File path /home/daruibio/test77/Database/UCSC/hg38//UCSC_telomeres.hg38.bed contains double '/'. This is likely unintended. It can also lead to inconsistent results of the file-matching approach used by Snakemake.
+File path /home/daruibio/test77/Database/UCSC/hg38//UCSC_segmental_dups.hg38.bed contains double '/'. This is likely unintended. It can also lead to inconsistent results of the file-matching approach used by Snakemake.
+File path /home/daruibio/test77/Database/UCSC/hg38//UCSC_single_repeats.hg38.bed contains double '/'. This is likely unintended. It can also lead to inconsistent results of the file-matching approach used by Snakemake.
+Job counts:
+	count	jobs
+	1	all
+	1	filter_by_region
+	1	merge_SVs
+	1	minimap2_alignment
+	1	run_cuteSV
+	1	run_sniffles
+	1	run_svim
+	7
+
+[Fri Jun 18 15:23:44 2021]
+rule minimap2_alignment:
+    input: /home/daruibio/test77/Database/references/homo_sapiens/hg38.mmi, /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.fastq.gz
+    output: {wildcards.workdir}/test.minimap2.bam
+    log: {wildcards.workdir}/log/test.minimap2_alignment.log
+    jobid: 4
+    benchmark: {wildcards.workdir}/benchmark/test.minimap2_alignment.tsv
+    wildcards: workdir={wildcards.workdir}, sample=test
+
+
+[Fri Jun 18 15:23:44 2021]
+rule run_cuteSV:
+    input: {wildcards.workdir}/test.minimap2.bam, /home/daruibio/test77/Database/references/homo_sapiens/hg38.fa
+    output: {wildcards.workdir}/test.cutesv.vcf, {wildcards.workdir}/test_cutesv_calls
+    log: {wildcards.workdir}/log/test.cutesv.log
+    jobid: 6
+    benchmark: {wildcards.workdir}/benchmark/test.cutesv.tsv
+    wildcards: workdir={wildcards.workdir}, sample=test
+
+
+[Fri Jun 18 15:23:44 2021]
+rule run_svim:
+    input: {wildcards.workdir}/test.minimap2.bam, /home/daruibio/test77/Database/references/homo_sapiens/hg38.fa
+    output: {wildcards.workdir}/test_svim_calls, {wildcards.workdir}/test_svim_calls/variants.vcf
+    log: {wildcards.workdir}/log/test.svim.log
+    jobid: 7
+    benchmark: {wildcards.workdir}/benchmark/test.svim.tsv
+    wildcards: workdir={wildcards.workdir}, sample=test
+
+
+[Fri Jun 18 15:23:44 2021]
+rule run_sniffles:
+    input: {wildcards.workdir}/test.minimap2.bam
+    output: {wildcards.workdir}/test.sniffles.vcf
+    log: {wildcards.workdir}/log/test.sniffles.log
+    jobid: 3
+    benchmark: {wildcards.workdir}/benchmark/test.sniffles.tsv
+    wildcards: workdir={wildcards.workdir}, sample=test
+
+
+[Fri Jun 18 15:23:44 2021]
+rule merge_SVs:
+    input: {wildcards.workdir}/test.sniffles.vcf, {wildcards.workdir}/test.cutesv.vcf, {wildcards.workdir}/test_svim_calls/variants.vcf
+    output: {wildcards.workdir}/test.merged_1callers.vcf, {wildcards.workdir}/test.merged_2callers.vcf, {wildcards.workdir}/test.merged_3callers.vcf, {wildcards.workdir}/test_vcf_names
+    log: {wildcards.workdir}/log/test.merge_SVs.log
+    jobid: 2
+    benchmark: {wildcards.workdir}/benchmark/test.merge_SVs.tsv
+    wildcards: workdir={wildcards.workdir}, sample=test
+
+
+[Fri Jun 18 15:23:44 2021]
+rule filter_by_region:
+    input: {wildcards.workdir}/test.merged_3callers.vcf, /home/daruibio/test77/Database/UCSC/hg38//UCSC_gap.hg38.bed, /home/daruibio/test77/Database/UCSC/hg38//UCSC_centromeres.hg38.bed, /home/daruibio/test77/Database/UCSC/hg38//UCSC_telomeres.hg38.bed, /home/daruibio/test77/Database/UCSC/hg38//UCSC_segmental_dups.hg38.bed, /home/daruibio/test77/Database/UCSC/hg38//UCSC_single_repeats.hg38.bed
+    output: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.merged_3callers_filt.vcf
+    log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/log/test.filter_by_region.log
+    jobid: 1
+    benchmark: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/benchmark/test.filter_by_region.tsv
+    wildcards: workdir=/home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data, sample=test
+
+RuleException in line 153 of /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/Snakefile:
+NameError: The name 'workdir' is unknown in this context. Did you mean 'wildcards.workdir'?
+  File "/home/daruibio/test77/miniconda3/envs/biosoft_py37/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 140, in run_jobs
+  File "/home/daruibio/test77/miniconda3/envs/biosoft_py37/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 145, in run
+  File "/home/daruibio/test77/miniconda3/envs/biosoft_py37/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 156, in _run
+  File "/home/daruibio/test77/miniconda3/envs/biosoft_py37/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 176, in printjob
+  File "/home/daruibio/test77/miniconda3/envs/biosoft_py37/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 162, in printjob

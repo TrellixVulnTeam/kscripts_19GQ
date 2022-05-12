@@ -1,0 +1,160 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 15
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	SURVIVOR_lowMQ
+	1	all
+	1	bam2bed
+	1	filter_by_region
+	1	minimap2_alignment
+	1	run_SURVIVOR
+	1	run_annotsv
+	1	run_cuteSV
+	1	run_sniffles
+	1	run_svim
+	10
+Select jobs to execute...
+
+[Fri Jul  2 13:02:44 2021]
+rule minimap2_alignment:
+    input: /home/daruibio/test77/Database/references/homo_sapiens/hg38.mmi, data/test.fastq.gz
+    output: results/test_z600_200/minimap2.bam
+    log: results/test_z600_200/log/minimap2_alignment.log
+    jobid: 5
+    benchmark: results/test_z600_200/benchmark/minimap2_alignment.tsv
+    wildcards: workdir=results, sample=test_z600_200
+    threads: 15
+
+[Fri Jul  2 13:04:07 2021]
+Finished job 5.
+1 of 10 steps (10%) done
+Select jobs to execute...
+
+[Fri Jul  2 13:04:07 2021]
+rule run_cuteSV:
+    input: results/test_z600_200/minimap2.bam, /home/daruibio/test77/Database/references/homo_sapiens/hg38.fa
+    output: results/test_z600_200/cutesv.vcf, results/test_z600_200/cutesv_calls
+    log: results/test_z600_200/log/cutesv.log
+    jobid: 7
+    benchmark: results/test_z600_200/benchmark/cutesv.tsv
+    wildcards: workdir=results, sample=test_z600_200
+    threads: 15
+
+[Fri Jul  2 13:04:33 2021]
+Finished job 7.
+2 of 10 steps (20%) done
+Select jobs to execute...
+
+[Fri Jul  2 13:04:33 2021]
+rule SURVIVOR_lowMQ:
+    input: results/test_z600_200/minimap2.bam
+    output: results/test_z600_200/lowMQ.sam, results/test_z600_200/lowMQ.bam, results/test_z600_200/lowMQ.cov, results/test_z600_200/lowMQ.bed
+    log: results/test_z600_200/log/SURVIVOR_lowMQ.log
+    jobid: 10
+    benchmark: results/test_z600_200/benchmark/SURVIVOR_lowMQ.log
+    wildcards: workdir=results, sample=test_z600_200
+    threads: 15
+
+Removing temporary output file results/test_z600_200/lowMQ.sam.
+Removing temporary output file results/test_z600_200/lowMQ.bam.
+Removing temporary output file results/test_z600_200/lowMQ.cov.
+[Fri Jul  2 13:04:41 2021]
+Finished job 10.
+3 of 10 steps (30%) done
+Select jobs to execute...
+
+[Fri Jul  2 13:04:41 2021]
+rule run_sniffles:
+    input: results/test_z600_200/minimap2.bam
+    output: results/test_z600_200/sniffles.vcf
+    log: results/test_z600_200/log/sniffles.log
+    jobid: 4
+    benchmark: results/test_z600_200/benchmark/sniffles.tsv
+    wildcards: workdir=results, sample=test_z600_200
+    threads: 15
+
+[Fri Jul  2 13:05:06 2021]
+Finished job 4.
+4 of 10 steps (40%) done
+Select jobs to execute...
+
+[Fri Jul  2 13:05:06 2021]
+rule run_svim:
+    input: results/test_z600_200/minimap2.bam, /home/daruibio/test77/Database/references/homo_sapiens/hg38.fa
+    output: results/test_z600_200/svim_calls, results/test_z600_200/svim_calls/variants.vcf
+    log: results/test_z600_200/log/svim.log
+    jobid: 8
+    benchmark: results/test_z600_200/benchmark/svim.tsv
+    wildcards: workdir=results, sample=test_z600_200
+
+
+[Fri Jul  2 13:05:06 2021]
+rule bam2bed:
+    input: results/test_z600_200/minimap2.bam
+    output: results/test_z600_200/minimap2.bed
+    log: results/test_z600_200/log/bam2bed.log
+    jobid: 9
+    benchmark: results/test_z600_200/benchmark/bam2bed.tsv
+    wildcards: workdir=results, sample=test_z600_200
+
+[Fri Jul  2 13:05:16 2021]
+Finished job 9.
+5 of 10 steps (50%) done
+[Fri Jul  2 13:05:20 2021]
+Finished job 8.
+6 of 10 steps (60%) done
+Select jobs to execute...
+
+[Fri Jul  2 13:05:20 2021]
+rule run_SURVIVOR:
+    input: results/test_z600_200/sniffles.vcf, results/test_z600_200/cutesv.vcf, results/test_z600_200/svim_calls/variants.vcf
+    output: results/test_z600_200/merged_1callers.vcf, results/test_z600_200/merged_2callers.vcf, results/test_z600_200/merged_3callers.vcf, results/test_z600_200/vcf_names
+    log: results/test_z600_200/log/SURVIVOR.log
+    jobid: 3
+    benchmark: results/test_z600_200/benchmark/SURVIVOR.tsv
+    wildcards: workdir=results, sample=test_z600_200
+
+[Fri Jul  2 13:05:21 2021]
+Finished job 3.
+7 of 10 steps (70%) done
+Select jobs to execute...
+
+[Fri Jul  2 13:05:21 2021]
+rule filter_by_region:
+    input: results/test_z600_200/merged_3callers.vcf, results/test_z600_200/minimap2.bed, results/test_z600_200/lowMQ.bed
+    output: results/test_z600_200/merged_3callers_filt.vcf
+    log: results/test_z600_200/log/filter_by_region.log
+    jobid: 2
+    benchmark: results/test_z600_200/benchmark/filter_by_region.tsv
+    wildcards: workdir=results, sample=test_z600_200
+
+[Fri Jul  2 13:05:21 2021]
+Finished job 2.
+8 of 10 steps (80%) done
+Select jobs to execute...
+
+[Fri Jul  2 13:05:21 2021]
+rule run_annotsv:
+    input: results/test_z600_200/merged_3callers_filt.vcf
+    output: results/test_z600_200/merged_3callers_filt.hg38_annotsv.tsv
+    log: results/test_z600_200/log/run_annotsv.log
+    jobid: 1
+    benchmark: results/test_z600_200/benchmark/run_annotsv.tsv
+    wildcards: workdir=results, sample=test_z600_200
+
+[Fri Jul  2 13:05:25 2021]
+Finished job 1.
+9 of 10 steps (90%) done
+Select jobs to execute...
+
+[Fri Jul  2 13:05:25 2021]
+localrule all:
+    input: results/test_z600_200/merged_3callers_filt.hg38_annotsv.tsv
+    jobid: 0
+
+[Fri Jul  2 13:05:25 2021]
+Finished job 0.
+10 of 10 steps (100%) done
+Complete log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/.snakemake/log/2021-07-02T130243.995702.snakemake.log

@@ -1,0 +1,5 @@
+Building DAG of jobs...
+File path /home/daruibio/test77/Database/UCSC/hg38//UCSC_gap.hg38.bed contains double '/'. This is likely unintended. It can also lead to inconsistent results of the file-matching approach used by Snakemake.
+WildcardError in line 154 of /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/Snakefile:
+Wildcards in input files cannot be determined from output files:
+'ucsc_dir'

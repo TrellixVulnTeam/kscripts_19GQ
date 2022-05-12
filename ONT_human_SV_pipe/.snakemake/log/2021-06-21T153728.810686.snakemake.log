@@ -1,0 +1,88 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 15
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	all
+	1	bam2bed
+	1	filter_by_region
+	1	minimap2_alignment
+	1	run_SURVIVOR
+	1	run_annotsv
+	1	run_cuteSV
+	1	run_sniffles
+	1	run_svim
+	9
+Select jobs to execute...
+
+[Mon Jun 21 15:37:29 2021]
+rule minimap2_alignment:
+    input: /home/daruibio/test77/Database/references/homo_sapiens/hg38.mmi, /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.fastq.gz
+    output: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/test.minimap2.bam
+    log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/log/test.minimap2_alignment.log
+    jobid: 5
+    benchmark: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/benchmark/test.minimap2_alignment.tsv
+    wildcards: workdir=/home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2, sample=test
+    threads: 15
+
+[Mon Jun 21 15:38:49 2021]
+Finished job 5.
+1 of 9 steps (11%) done
+Select jobs to execute...
+
+[Mon Jun 21 15:38:49 2021]
+rule run_cuteSV:
+    input: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/test.minimap2.bam, /home/daruibio/test77/Database/references/homo_sapiens/hg38.fa
+    output: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/test.cutesv.vcf, /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/test_cutesv_calls
+    log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/log/test.cutesv.log
+    jobid: 7
+    benchmark: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/benchmark/test.cutesv.tsv
+    wildcards: workdir=/home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2, sample=test
+    threads: 15
+
+[Mon Jun 21 15:39:12 2021]
+Finished job 7.
+2 of 9 steps (22%) done
+Select jobs to execute...
+
+[Mon Jun 21 15:39:12 2021]
+rule run_sniffles:
+    input: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/test.minimap2.bam
+    output: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/test.sniffles.vcf
+    log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/log/test.sniffles.log
+    jobid: 4
+    benchmark: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/benchmark/test.sniffles.tsv
+    wildcards: workdir=/home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2, sample=test
+    threads: 15
+
+[Mon Jun 21 15:39:36 2021]
+Finished job 4.
+3 of 9 steps (33%) done
+Select jobs to execute...
+
+[Mon Jun 21 15:39:36 2021]
+rule run_svim:
+    input: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/test.minimap2.bam, /home/daruibio/test77/Database/references/homo_sapiens/hg38.fa
+    output: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/test_svim_calls, /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/test_svim_calls/variants.vcf
+    log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/log/test.svim.log
+    jobid: 8
+    benchmark: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/benchmark/test.svim.tsv
+    wildcards: workdir=/home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2, sample=test
+
+
+[Mon Jun 21 15:39:36 2021]
+rule bam2bed:
+    input: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/test.minimap2.bam
+    output: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/test.minimap2.bed
+    log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/log/test.bam2bed.log
+    jobid: 9
+    benchmark: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/benchmark/test.bam2bed.tsv
+    wildcards: workdir=/home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2, sample=test
+
+[Mon Jun 21 15:39:50 2021]
+Finished job 8.
+4 of 9 steps (44%) done
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/.snakemake/log/2021-06-21T153728.810686.snakemake.log

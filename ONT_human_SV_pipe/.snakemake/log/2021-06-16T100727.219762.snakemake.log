@@ -1,0 +1,45 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 16
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	all
+	1	make_minimap2_index
+	1	minimap2_alignment
+	3
+Select jobs to execute...
+
+[Wed Jun 16 10:07:27 2021]
+rule make_minimap2_index:
+    input: /home/daruibio/test77/Database/references/homo_sapiens/hg38.fa
+    output: /home/daruibio/test77/Database/references/homo_sapiens/hg38.mmi
+    jobid: 1
+
+
+[Wed Jun 16 10:07:28 2021]
+rule minimap2_alignment:
+    input: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.fastq.gz
+    output: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.minimap2.bam
+    log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/log/test.minimap2_alignment.log
+    jobid: 2
+    wildcards: workdir=/home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data, sample=test
+    threads: 14
+
+[Wed Jun 16 10:07:45 2021]
+Finished job 2.
+1 of 3 steps (33%) done
+[Wed Jun 16 10:09:20 2021]
+Finished job 1.
+2 of 3 steps (67%) done
+Select jobs to execute...
+
+[Wed Jun 16 10:09:20 2021]
+localrule all:
+    input: /home/daruibio/test77/Database/references/homo_sapiens/hg38.mmi, /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.minimap2.bam
+    jobid: 0
+
+[Wed Jun 16 10:09:20 2021]
+Finished job 0.
+3 of 3 steps (100%) done
+Complete log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/.snakemake/log/2021-06-16T100727.219762.snakemake.log

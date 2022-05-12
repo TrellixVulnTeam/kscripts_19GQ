@@ -1,0 +1,77 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 15
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	all
+	1	bam2bed
+	1	filter_by_region
+	1	run_SURVIVOR
+	1	run_annotsv
+	5
+Select jobs to execute...
+
+[Mon Jun 21 15:43:19 2021]
+rule bam2bed:
+    input: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/test.minimap2.bam
+    output: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/test.minimap2.bed
+    log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/log/test.bam2bed.log
+    jobid: 9
+    benchmark: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/benchmark/test.bam2bed.tsv
+    wildcards: workdir=/home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2, sample=test
+
+[Mon Jun 21 15:43:19 2021]
+rule run_SURVIVOR:
+    input: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/test.sniffles.vcf, /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/test.cutesv.vcf, /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/test_svim_calls/variants.vcf
+    output: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/test.merged_1callers.vcf, /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/test.merged_2callers.vcf, /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/test.merged_3callers.vcf, /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/test_vcf_names
+    log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/log/test.SURVIVOR.log
+    jobid: 3
+    benchmark: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/benchmark/test.SURVIVOR.tsv
+    wildcards: workdir=/home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2, sample=test
+
+[Mon Jun 21 15:43:20 2021]
+Finished job 9.
+1 of 5 steps (20%) done
+[Mon Jun 21 15:43:21 2021]
+Finished job 3.
+2 of 5 steps (40%) done
+Select jobs to execute...
+
+[Mon Jun 21 15:43:21 2021]
+rule filter_by_region:
+    input: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/test.merged_3callers.vcf, /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/test.minimap2.bed
+    output: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/test.merged_3callers_filt.vcf
+    log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/log/test.filter_by_region.log
+    jobid: 2
+    benchmark: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/benchmark/test.filter_by_region.tsv
+    wildcards: workdir=/home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2, sample=test
+
+[Mon Jun 21 15:43:21 2021]
+Finished job 2.
+3 of 5 steps (60%) done
+Select jobs to execute...
+
+[Mon Jun 21 15:43:21 2021]
+rule run_annotsv:
+    input: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/test.merged_3callers_filt.vcf
+    output: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/test.merged_3callers_filt.hg38_annotsv.tsv
+    log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/log/test.run_annotsv.log
+    jobid: 1
+    benchmark: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/benchmark/test.run_annotsv.tsv
+    wildcards: workdir=/home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2, sample=test
+
+[Mon Jun 21 15:43:25 2021]
+Finished job 1.
+4 of 5 steps (80%) done
+Select jobs to execute...
+
+[Mon Jun 21 15:43:25 2021]
+localrule all:
+    input: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data2/test.merged_3callers_filt.hg38_annotsv.tsv
+    jobid: 0
+
+[Mon Jun 21 15:43:25 2021]
+Finished job 0.
+5 of 5 steps (100%) done
+Complete log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/.snakemake/log/2021-06-21T154319.666989.snakemake.log

@@ -1,0 +1,23 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 16
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	all
+	1	bam2bed
+	2
+Select jobs to execute...
+
+[Thu Jun 17 16:39:48 2021]
+rule bam2bed:
+    input: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.minimap2.bam
+    output: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.minimap2.bed
+    log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/log/test.bam2bed.log
+    jobid: 7
+    benchmark: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/benchmark/test.bam2bed.tsv
+    wildcards: workdir=/home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data, sample=test
+
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/.snakemake/log/2021-06-17T163948.644131.snakemake.log

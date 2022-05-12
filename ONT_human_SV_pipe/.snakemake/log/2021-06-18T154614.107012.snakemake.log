@@ -1,0 +1,16 @@
+Building DAG of jobs...
+Job counts:
+	count	jobs
+	1	all
+	1	filter_by_region
+	2
+
+[Fri Jun 18 15:46:14 2021]
+rule filter_by_region:
+    input: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.merged_3callers.vcf
+    output: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.merged_3callers_filt.vcf
+    log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/log/test.filter_by_region.log
+    jobid: 1
+    benchmark: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/benchmark/test.filter_by_region.tsv
+    wildcards: workdir=/home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data, sample=test
+

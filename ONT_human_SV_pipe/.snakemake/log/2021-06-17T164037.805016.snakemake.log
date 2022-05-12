@@ -1,0 +1,34 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 16
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	all
+	1	bam2bed
+	2
+Select jobs to execute...
+
+[Thu Jun 17 16:40:38 2021]
+rule bam2bed:
+    input: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.minimap2.bam
+    output: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.minimap2.bed
+    log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/log/test.bam2bed.log
+    jobid: 7
+    benchmark: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/benchmark/test.bam2bed.tsv
+    wildcards: workdir=/home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data, sample=test
+
+[Thu Jun 17 16:40:47 2021]
+Finished job 7.
+1 of 2 steps (50%) done
+Select jobs to execute...
+
+[Thu Jun 17 16:40:47 2021]
+localrule all:
+    input: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.merged_3callers.vcf, /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/data/test.minimap2.bed
+    jobid: 0
+
+[Thu Jun 17 16:40:47 2021]
+Finished job 0.
+2 of 2 steps (100%) done
+Complete log: /home/daruibio/test77/Software/Kscripts/SV_snakemake_pipe/.snakemake/log/2021-06-17T164037.805016.snakemake.log
