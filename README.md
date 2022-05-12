@@ -1,2 +1,3 @@
-# kscripts
-工作中开发的流程及脚本
+# Kscripts
+
+vscode 本来就有 git 功能
