@@ -1,28 +1,38 @@
-#!/home/ionadmin/software/miniconda3/envs/data_analysis/bin/python
-# -*- coding:utf-8 -*-
+#!/usr/bin/env python
+
+# @CreateTime       : 2022/05/16
+# @Author           : mengxf
+# @version          : v1.1
+# @LastModified     : 2022/05/16
+
+# @用意：替代GNU parallel主要功能
 
 import os, sys
+import logging
 import argparse
 from subprocess import run
 from multiprocessing import Pool
-from pprint import pprint
 
+
+logging.basicConfig(level=logging.DEBUG,
+                    format="%(asctime)s - %(levelname)s - %(filename)s - %(message)s",
+                    datefmt="%Y-%m-%d %H:%M:%S")
 
 def execute_linux_commandline(cmd):
-    print("Command Line: " + cmd)
-    a = run(cmd, shell=True, check=True, encoding='utf-8')
-    print(a.returncode)
+    logging.debug("Command Line: " + cmd)
+    res = run(cmd, shell=True, check=True, encoding='utf-8')
+    logging.debug(res.returncode)
 
 def main(shell_scripts, processes):
     with open(shell_scripts, 'rt', encoding='utf-8') as f:
         cmd_list = [line.strip() for line in f]
-
+    # 并行
     pool = Pool(processes)
     pool.map_async(execute_linux_commandline, cmd_list)
-    print('Waiting for all subprocesses done...')
+    logging.info('Waiting for all subprocesses done...')
     pool.close()
     pool.join()
-    print('All subprocesses done.')
+    logging.info('All subprocesses done.')
 
 def get_argparses():
     parser = argparse.ArgumentParser()
