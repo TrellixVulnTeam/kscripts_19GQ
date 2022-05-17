@@ -23,8 +23,11 @@ args = general.get_args()
 if args.subparser_name == "wgs":
     pipe = Trace.PhyloWGS(infile=args.infile)
     pipe.execute()
-elif args.subparser_name == "snp":
+elif args.subparser_name == "snp" and args.seq_type == "FA":
     pipe = Trace.PhyloSNP(infile=args.infile)
+    pipe.execute()
+elif args.subparser_name == "snp" and args.seq_type == "FQ":
+    pipe = Trace.PhyloSNPFQ(infile=args.infile)
     pipe.execute()
 elif args.subparser_name == "core":
     pipe = Trace.PhyloCORE(infile=args.infile)

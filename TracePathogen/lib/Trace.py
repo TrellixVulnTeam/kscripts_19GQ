@@ -599,5 +599,5 @@ class PhyloSNPFQ(PhyloSNP):
         self.remove_intermedia()
         self.upload()
         self.report()
-        self.myrun(runbool=False)
+        self.myrun(runbool=True)
         logging.info("溯源进化树>全基因组SNP-FASTQ流程: 分析完成!")

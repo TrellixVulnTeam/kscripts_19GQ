@@ -144,27 +144,26 @@ def myrun(command_log:tuple):
 
 def add_share_argmunts(subparser):
     # 共享参数
-    subparser.add_argument("-i", "--infile", help="Input sample information YAML file.", required=True)
+    subparser.add_argument("-i", "--infile", help="样本信息YAML文件.", required=True)
 
 
 def get_args():
     """溯源进化树 - 命令行解析器"""
     parser = argparse.ArgumentParser(
-        description="Traceability phylogenetic tree main program, including the whole genome multiple sequence alignment tree, SNP tree and core gene tree."
+        description="溯源进化树主程序, 包括全基因组多序列比对(MSA)进化树,SNP进化树和核心基因进化树."
     )
     # 子命令 subparser_name 获取用的是哪个子命令 
-    subparsers = parser.add_subparsers(dest="subparser_name", description="WGMSA tree, SNP tree and Core Gene tree.")
+    subparsers = parser.add_subparsers(dest="subparser_name")
     #~子命令 - 全基因组多序列比对进化树
-    parser_wgs = subparsers.add_parser("wgs", help="whole genome multi-sequence alignment tree.")
+    parser_wgs = subparsers.add_parser("wgs", help="全基因组多序列比对(MSA)进化树")
     add_share_argmunts(parser_wgs)
     #~子命令 - SNP进化树
-    parser_snp = subparsers.add_parser("snp", help="SNP tree.")
+    parser_snp = subparsers.add_parser("snp", help="SNP进化树.")
     add_share_argmunts(parser_snp)
-    # add_share_argmunts(parser_snp)
+    parser_snp.add_argument("--seq_type", required=True, choices=["FQ", "FA"], help="输入序列类型,FQ/FA二选一")
     #~子命令 - 核心基因进化树
-    parser_core = subparsers.add_parser("core", help="core gene tree.")
+    parser_core = subparsers.add_parser("core", help="核心基因进化树.")
     add_share_argmunts(parser_core)
-    # add_share_argmunts(parser_core)
     args = parser.parse_args()
     # 解决"不加任何参数没有帮助信息,不退出"的问题
     if args.subparser_name is None:
