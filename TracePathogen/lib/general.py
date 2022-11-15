@@ -1,5 +1,6 @@
 import os
 import sys
+import re
 import logging
 import subprocess
 from multiprocessing import Pool
@@ -134,7 +135,7 @@ def myrun(command_log:tuple):
     dict_env["PATH"] = f"{bin_current}:{dict_env['PATH']}"
     # 运行
     res = subprocess.run(_cml, shell=True, encoding="utf-8",
-    stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=dict_env)
+                        stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=dict_env)
     with open(_log, "at", encoding="utf-8", newline="") as gh:
         gh.write("[STDOUT]\n" + res.stdout)
         gh.write("\n[STDERR]\n" + res.stderr)
@@ -142,35 +143,17 @@ def myrun(command_log:tuple):
 ################################################################################
 #综合函数#######################################################################
 
-def add_share_argmunts(subparser):
-    # 共享参数
-    subparser.add_argument("-i", "--infile", help="样本信息YAML文件.", required=True)
-
-
 def get_args():
     """溯源进化树 - 命令行解析器"""
     parser = argparse.ArgumentParser(
-        description="溯源进化树主程序, 包括全基因组多序列比对(MSA)进化树,SNP进化树和核心基因进化树."
+        description='溯源进化树主程序, 包括全基因组多序列比对(MSA)进化树,SNP进化树和核心基因进化树.'
     )
-    # 子命令 subparser_name 获取用的是哪个子命令 
-    subparsers = parser.add_subparsers(dest="subparser_name")
-    #~子命令 - 全基因组多序列比对进化树
-    parser_wgs = subparsers.add_parser("wgs", help="全基因组多序列比对(MSA)进化树")
-    add_share_argmunts(parser_wgs)
-    #~子命令 - SNP进化树
-    parser_snp = subparsers.add_parser("snp", help="SNP进化树.")
-    add_share_argmunts(parser_snp)
-    parser_snp.add_argument("--seq_type", required=True, choices=["FQ", "FA"], help="输入序列类型,FQ/FA二选一")
-    #~子命令 - 核心基因进化树
-    parser_core = subparsers.add_parser("core", help="核心基因进化树.")
-    add_share_argmunts(parser_core)
+    parser.add_argument('-p', '--pipe', choices=['wgs','snp','core'], required=True, 
+                        help='选择要跑的子流程')
+    parser.add_argument('-i', '--inyaml', help='样本信息YAML文件.', required=True)
+    parser.add_argument('-n', '--dryrun', action='store_true', help='不运行,只生成脚本和目录. (default:False)')
     args = parser.parse_args()
-    # 解决"不加任何参数没有帮助信息,不退出"的问题
-    if args.subparser_name is None:
-        parser.print_help()
-        sys.exit(1)
     return args
-
 
 def format_runtime(second):
     """秒转时分秒"""
@@ -188,28 +171,24 @@ def format_runtime(second):
 def merge_wgs_fasta(mfasta, dict_sample):
     """
     合并全基因组多序列比对FASTA
-    [mfasta]        : 输出合成的 FASTA
-    [dict_sample]   : 样本字典,key是样本名, value是样本绝对路径
+    [220801] customer tree 库文件名一样,里面的表头重复,什么鬼???格式化一下
+    mfasta        : 输出合成的 FASTA
+    dict_sample   : 样本字典,key是样本名, value是样本绝对路径
     """
-    head_list = list()
-    gh = open(mfasta, "wt", encoding="utf-8", newline="")
-    for name, spath in dict_sample.items():
-        headnum = 1
-        with open(spath) as fh:
-            for line in fh:
-                if line.startswith(">"):
-                    newhead = f"{name}"
-                    while newhead in head_list:
-                        headnum += 1
-                        newhead = f"{name}_{headnum}"
-                    head_list.append(newhead)
-                    gh.write(f">{newhead}\n")
-                else:
-                    gh.write(line)
-    gh.close()
+    dir_mergefa = os.path.dirname(mfasta)
+    cml = "cat "
+    for name in dict_sample:
+        fa = dict_sample[name]
+        sub_fa = f"{dir_mergefa}/{os.path.basename(fa)}"
+        sub_name = re.sub(".fasta|.fa|.fna", "", name)
+        cml_sub = f"sed 's/>.*/>{sub_name}/g' {fa} > {sub_fa}"
+        os.system(cml_sub)
+        cml += f"{sub_fa} "
+    cml += f"> {mfasta}"
+    logging.debug(f"shell: {cml}")
+    subprocess.run(cml, shell=True)
 
 
-@time_wrapper
 def format_fasta(name, infile, outfile):
     """
     格式化表头名
@@ -232,7 +211,6 @@ def format_fasta(name, infile, outfile):
                 gh.write(line)
 
 
-@time_wrapper
 def mymakedirs(dirs:list, outdir):
     """根据列表创建子目录"""
     for dr in dirs:

@@ -80,7 +80,7 @@ class PhyloWGS():
             software    = self.dict_soft["mafft"],
             infile      = self.fasta_merged,
             outfile     = f"{self.outdir}/2.MSA/{self.library}.aln.fa",
-            log         = f"{self.outdir}/Logs/{self.library}.mafft",
+            log         = f"{self.outdir}/logs/{self.library}.mafft",
             params      = "--auto --maxiterate 1000",
             thread      = self.thread,
             ptn         = "{software} --thread {thread} {params} {infile} > {outfile}"
@@ -93,7 +93,7 @@ class PhyloWGS():
             software    = self.dict_soft["fasttree"],
             infile      = self.rule_msa.outfile,
             outfile     = f"{self.outdir}/3.PhylogeneticTree/{self.library}.tre",
-            log         = f"{self.outdir}/Logs/{self.library}.fasttree",
+            log         = f"{self.outdir}/logs/{self.library}.fasttree",
             params      = "-nt",
             ptn         = "{software} {params} {infile} > {outfile}"
         )
@@ -101,7 +101,7 @@ class PhyloWGS():
         self.rule_rtree = MyRule(
             software    = f"{self.dict_soft['Rscript']} {self.dir_bin}/tree.R",
             infile      = self.rule_phylo.outfile,
-            log         = f"{self.outdir}/Logs/{self.library}.rtree",
+            log         = f"{self.outdir}/logs/{self.library}.rtree",
             ptn         = "{software} {infile}"
         )
         general.magick_dir(
@@ -114,21 +114,33 @@ class PhyloWGS():
     def upload(self):
         self.mylog.info("上传数据")
         tree_figs = ["rectangular", "rectangular_bl", "slanted", "circular"]
-        link2upload(self.fasta_merged, f"{self.outdir}/Upload/1.MergeFA")
-        link2upload(self.rule_msa.outfile, f"{self.outdir}/Upload/2.MSA")
-        link2upload(self.rule_phylo.outfile, f"{self.outdir}/Upload/3.PhylogeneticTree")
-        # 进化树图软连接到Upload目录
-        mylink = partial(link2upload, dir_upload=f"{self.outdir}/Upload/3.PhylogeneticTree")
+        cml = f"""
+# 上传数据
+cp -f {self.fasta_merged} {self.outdir}/Upload/1.MergeFA
+cp -f {self.rule_msa.outfile} {self.outdir}/Upload/2.MSA
+cp -f {self.rule_phylo.outfile} {self.outdir}/Upload/3.PhylogeneticTree
+        """
         for tf in tree_figs:
-            mylink(f"{self.outdir}/3.PhylogeneticTree/{tf}.png")
-            mylink(f"{self.outdir}/3.PhylogeneticTree/{tf}.svg")
+            cml += f"""
+cp -f {self.outdir}/3.PhylogeneticTree/{tf}.png {self.outdir}/Upload/3.PhylogeneticTree
+cp -f {self.outdir}/3.PhylogeneticTree/{tf}.svg {self.outdir}/Upload/3.PhylogeneticTree
+            """
+        run(cml, shell=True)
+        # link2upload(self.fasta_merged, f"{self.outdir}/Upload/1.MergeFA")
+        # link2upload(self.rule_msa.outfile, f"{self.outdir}/Upload/2.MSA")
+        # link2upload(self.rule_phylo.outfile, f"{self.outdir}/Upload/3.PhylogeneticTree")
+        # # 进化树图软连接到Upload目录
+        # mylink = partial(link2upload, dir_upload=f"{self.outdir}/Upload/3.PhylogeneticTree")
+        # for tf in tree_figs:
+        #     mylink(f"{self.outdir}/3.PhylogeneticTree/{tf}.png")
+        #     mylink(f"{self.outdir}/3.PhylogeneticTree/{tf}.svg")
 
     def report(self):
         self.mylog.info("生成报告")
         self.rule_report = MyRule(
             software=f"{self.dict_soft['perl']} {self.dir_bin}/report.pl",
             infile=f"{self.outdir}/Upload",
-            log=f"{self.outdir}/Logs/{self.library}.report",
+            log=f"{self.outdir}/logs/{self.library}.report",
             params="wgs",
             ptn="{software} {infile} {params}"
         )
@@ -138,7 +150,7 @@ class PhyloWGS():
 
     def execute(self):
         logging.info("溯源进化树>全基因组多序列比对流程: 开始分析!")
-        self.make_result_dir(["1.MergeFA", "2.MSA", "3.PhylogeneticTree", "Logs"])
+        self.make_result_dir(["1.MergeFA", "2.MSA", "3.PhylogeneticTree", "logs"])
         self.merge_fasta()
         self.msa()
         self.build_tree()
@@ -161,6 +173,7 @@ class PhyloSNP(PhyloWGS):
         """基础信息"""
         super().assign_base_info()
         self.reference = self.dict_input["reference"]
+        self.kindom = self.dict_input["kindom"]
         
     def snippy_multiple(self):
         """snippy多样本并行"""
@@ -170,7 +183,7 @@ class PhyloSNP(PhyloWGS):
         _infiles, _logs, _outfiles = list(), list(), list()
         for samp in self.dict_sample:
             _infiles.append(self.dict_sample[samp])
-            _logs.append(f"{self.outdir}/Logs/{samp}.snippy")
+            _logs.append(f"{self.outdir}/logs/{samp}.snippy")
             dir_tmp = f"{self.outdir}/1.Variants/{samp}"
             _outfiles.append(f"--outdir {dir_tmp} --prefix {samp}")
         # rules
@@ -197,28 +210,33 @@ class PhyloSNP(PhyloWGS):
             software=self.dict_soft["bcftools"],
             infile=file_merge_vcf,
             outfile=f"{self.outdir}/2.MergeVCF/{self.library}.vcf",
-            log=f"{self.outdir}/Logs/{self.library}.merge_vcf",
+            log=f"{self.outdir}/logs/{self.library}.merge_vcf",
             params="-m snps -f PASS,. --force-samples --output-type v",
             ptn="{software} merge {params} --file-list {infile} -o {outfile}"
         )
 
     def build_tree(self):
         self.mylog.info("进化树构建")
+        # [220616] vcf2phylip.py -m 参数调整,针对真菌细菌
+        if self.kindom == "virus": # 病毒
+            min_samples_locus = 1
+        else: # 细菌真菌
+            min_samples_locus = len(self.dict_sample.keys())
         # 1.vcf转phy
         self.rule_vcf2phy = MyRule(
             software=f"{self.dict_soft['python']} {self.dir_bin}/vcf2phylip.py",
             infile=self.rule_mergevcf.outfile,
             outfile=f"{self.outdir}/3.PhylogeneticTree",
-            params="-m 1",
-            log=f"{self.outdir}/Logs/{self.library}.vcf2phy",
+            params=f"-m {min_samples_locus} --fasta",
+            log=f"{self.outdir}/logs/{self.library}.vcf2phy",
             ptn="{software} {params} -i {infile} --output-folder {outfile}"
         )
         # 2.fasttree
         self.rule_fasttree = MyRule(
             software=self.dict_soft["fasttree"],
-            infile=f"{self.outdir}/3.PhylogeneticTree/{self.library}.min1.phy",
+            infile=f"{self.outdir}/3.PhylogeneticTree/{self.library}.min{min_samples_locus}.fasta",
             outfile=f"{self.outdir}/3.PhylogeneticTree/{self.library}.tre",
-            log=f"{self.outdir}/Logs/{self.library}.fasttree",
+            log=f"{self.outdir}/logs/{self.library}.fasttree",
             params="-nt",
             ptn="{software} {params} {infile} > {outfile}"
         )
@@ -226,7 +244,7 @@ class PhyloSNP(PhyloWGS):
         self.rule_rtree = MyRule(
             software=f"{self.dict_soft['Rscript']} {self.dir_bin}/tree.R",
             infile=self.rule_fasttree.outfile,
-            log=f"{self.outdir}/Logs/{self.library}.rtree",
+            log=f"{self.outdir}/logs/{self.library}.rtree",
             ptn="{software} {infile}",
         )
         general.magick_dir(
@@ -243,27 +261,37 @@ class PhyloSNP(PhyloWGS):
     def upload(self):
         self.mylog.info("上传数据")
         tree_figs = ["rectangular", "rectangular_bl", "slanted", "circular"]
-        link2upload(self.rule_mergevcf.outfile, f"{self.outdir}/Upload/2.MergeVCF")
-        link2upload(self.rule_fasttree.outfile, f"{self.outdir}/Upload/3.PhylogeneticTree")
-        # 进化树图软连接到Upload目录
-        mylink = partial(link2upload, dir_upload=f"{self.outdir}/Upload/3.PhylogeneticTree")
+        cml = f"""
+cp -f {self.rule_mergevcf.outfile} {self.outdir}/Upload/2.MergeVCF
+cp -f {self.rule_fasttree.outfile} {self.outdir}/Upload/3.PhylogeneticTree
+        """
         for tf in tree_figs:
-            mylink(f"{self.outdir}/3.PhylogeneticTree/{tf}.png")
-            mylink(f"{self.outdir}/3.PhylogeneticTree/{tf}.svg")
+            cml += f"""
+cp -f {self.outdir}/3.PhylogeneticTree/{tf}.png {self.outdir}/Upload/3.PhylogeneticTree
+cp -f {self.outdir}/3.PhylogeneticTree/{tf}.svg {self.outdir}/Upload/3.PhylogeneticTree
+            """
+        run(cml, shell=True)
+        # link2upload(self.rule_mergevcf.outfile, f"{self.outdir}/Upload/2.MergeVCF")
+        # link2upload(self.rule_fasttree.outfile, f"{self.outdir}/Upload/3.PhylogeneticTree")
+        # # 进化树图软连接到Upload目录
+        # mylink = partial(link2upload, dir_upload=f"{self.outdir}/Upload/3.PhylogeneticTree")
+        # for tf in tree_figs:
+        #     mylink(f"{self.outdir}/3.PhylogeneticTree/{tf}.png")
+        #     mylink(f"{self.outdir}/3.PhylogeneticTree/{tf}.svg")
 
     def report(self):
         self.mylog.info("生成报告")
         self.rule_report = MyRule(
             software=f"{self.dict_soft['perl']} {self.dir_bin}/report.pl",
             infile=f"{self.outdir}/Upload",
-            log=f"{self.outdir}/Logs/{self.library}.report",
+            log=f"{self.outdir}/logs/{self.library}.report",
             params="snp",
             ptn="{software} {infile} {params}"
         )
 
     def execute(self):
         logging.info("溯源进化树>全基因组SNP流程: 开始分析!")
-        self.make_result_dir(["1.Variants", "2.MergeVCF", "3.PhylogeneticTree", "Logs"])
+        self.make_result_dir(["1.Variants", "2.MergeVCF", "3.PhylogeneticTree", "logs"])
         self.snippy_multiple()
         self.merge_vcf()
         self.build_tree()
@@ -301,7 +329,7 @@ class PhyloCORE(PhyloWGS):
         _infiles, _logs, _outfiles = list(), list(), list()
         for name, fasta in self.dict_sample_formatted.items():
             _infiles.append(fasta)
-            _logs.append(f"{self.outdir}/Logs/{name}.genepredict")
+            _logs.append(f"{self.outdir}/logs/{name}.genepredict")
             _outfiles.append(f"-a {self.outdir}/1.Orthologue/GenePrediction/{name}.faa "
             f"-o {self.outdir}/1.Orthologue/GenePrediction/{name}.genes")
 
@@ -320,10 +348,10 @@ class PhyloCORE(PhyloWGS):
         _infiles, _logs, _outfiles = list(), list(), list()
         for name, fasta in self.dict_sample_formatted.items():
             _infiles.append(fasta)
-            _logs.append(f"{self.outdir}/Logs/{name}.genepredict")
+            _logs.append(f"{self.outdir}/logs/{name}.genepredict")
             _outfiles.append(f"-A {self.outdir}/1.Orthologue/GenePrediction/{name}.faa "
-            f"-o {self.outdir}/1.Orthologue/GenePrediction/{name}.genes "
-            f"-D {self.outdir}/1.Orthologue/GenePrediction/{name}.fna")
+                            f"-o {self.outdir}/1.Orthologue/GenePrediction/{name}.genes "
+                            f"-D {self.outdir}/1.Orthologue/GenePrediction/{name}.fna")
         # rule genemark
         self.rule_genepred = MyRuleS(
             software=self.dict_soft["gmhmmp"],
@@ -354,7 +382,7 @@ class PhyloCORE(PhyloWGS):
         for name in self.dict_sample:
             _infiles.append(f"{self.outdir}/1.Orthologue/GenePrediction/{name}.faa")
             _outfiles.append(f"{self.outdir}/1.Orthologue/GenePrediction/{name}_L33.faa")
-            _logs.append(f"{self.outdir}/Logs/{name}.gene_predict_seqtk_seq")
+            _logs.append(f"{self.outdir}/logs/{name}.gene_predict_seqtk_seq")
         self.rules_genepred_lenfilter = MyRuleS(
             software=self.dict_soft["seqtk"],
             infiles=_infiles,
@@ -390,7 +418,7 @@ class PhyloCORE(PhyloWGS):
             software=self.dict_soft["orthofinder"],
             infile=f"{self.outdir}/1.Orthologue/orthofinder_indir",
             outfile=f"-o {self.outdir}/1.Orthologue/orthofinder_out -n {self.library}",
-            log=f"{self.outdir}/Logs/{self.library}.orthologue",
+            log=f"{self.outdir}/logs/{self.library}.orthologue",
             params="-S diamond",
             thread=int(self.thread) * int(self.parallel),
             ptn="{software} -t {thread} {params} -f {infile} {outfile}"
@@ -418,16 +446,16 @@ class PhyloCORE(PhyloWGS):
         self.orthofinder()
         # 并行数太多 MyRulS 没有运行,老办法吧
         dir_single_copy = f"{self.outdir}/1.Orthologue/orthofinder_out/"\
-            f"Results_{self.library}/Single_Copy_Orthologue_Sequences"
-        log_single_copy = f"{self.outdir}/Logs/{self.library}.singlecopy"
+                        f"Results_{self.library}/Single_Copy_Orthologue_Sequences"
+        log_single_copy = f"{self.outdir}/logs/{self.library}.singlecopy"
         # 生成并运行大脚本
         big_cml = f"for i in {dir_single_copy}/*.fa;\ndo\n  {self.dict_soft['muscle']} -in $i -out $i.1\n"\
-        f"  {self.dict_soft['Gblocks']} $i.1 -b4=5 -b5=h -t=p -e=.2\n"\
-        f"  {self.dict_soft['seqkit']} sort $i.1.2 | {self.dict_soft['seqkit']} seq -w 0 > $i.3\ndone\n"
+                f"  {self.dict_soft['Gblocks']} $i.1 -b4=5 -b5=h -t=p -e=.2\n"\
+                f"  {self.dict_soft['seqkit']} sort $i.1.2 | {self.dict_soft['seqkit']} seq -w 0 > $i.3\ndone\n"
         file_big_cml = f"{self.outdir}/1.Orthologue/singlecopy_multi.sh"
         with open(file_big_cml, "wt", encoding="utf-8", newline="") as gh:
             gh.write(big_cml)
-        general.run((f"bash {file_big_cml}", log_single_copy))
+        general.myrun((f"bash {file_big_cml}", log_single_copy))
         # 合并保守单拷贝基因
         self.make_core_gene(files_single_gene=glob(f"{dir_single_copy}/*.3"))
     
@@ -437,7 +465,7 @@ class PhyloCORE(PhyloWGS):
             software    = self.dict_soft["mafft"],
             infile      = self.file_supergene,
             outfile     = f"{self.outdir}/2.MSA/{self.library}.aln.fa",
-            log         = f"{self.outdir}/Logs/{self.library}.mafft",
+            log         = f"{self.outdir}/logs/{self.library}.mafft",
             params      = "--auto --maxiterate 1000",
             thread      = self.thread,
             ptn         = "{software} --thread {thread} {params} {infile} > {outfile}"
@@ -450,27 +478,31 @@ class PhyloCORE(PhyloWGS):
     def upload(self):
         self.mylog.info("上传数据")
         tree_figs = ["rectangular", "rectangular_bl", "slanted", "circular"]
-        link2upload(self.file_supergene, f"{self.outdir}/Upload/1.Orthologue")
-        link2upload(self.rule_msa.outfile, f"{self.outdir}/Upload/2.MSA")
-        # 进化树图软连接到Upload目录
-        mylink = partial(link2upload, dir_upload=f"{self.outdir}/Upload/3.PhylogeneticTree")
+        cml = f"""
+# 上传数据
+cp -f {self.file_supergene} {self.outdir}/Upload/1.Orthologue
+cp -f {self.rule_msa.outfile} {self.outdir}/Upload/2.MSA
+        """
         for tf in tree_figs:
-            mylink(f"{self.outdir}/3.PhylogeneticTree/{tf}.png")
-            mylink(f"{self.outdir}/3.PhylogeneticTree/{tf}.svg")
+            cml += f"""
+cp -f {self.outdir}/3.PhylogeneticTree/{tf}.png {self.outdir}/Upload/3.PhylogeneticTree
+cp -f {self.outdir}/3.PhylogeneticTree/{tf}.svg {self.outdir}/Upload/3.PhylogeneticTree
+            """
+        run(cml, shell=True)
 
     def report(self):
         self.mylog.info("生成报告")
         self.rule_report = MyRule(
             software=f"{self.dict_soft['perl']} {self.dir_bin}/report.pl",
             infile=f"{self.outdir}/Upload",
-            log=f"{self.outdir}/Logs/{self.library}.report",
+            log=f"{self.outdir}/logs/{self.library}.report",
             params="core",
             ptn="{software} {infile} {params}"
         )
 
     def execute(self):
         logging.info("溯源进化树>核心基因流程: 开始分析!")
-        self.make_result_dir(["1.Orthologue", "2.MSA", "3.PhylogeneticTree", "FormatFASTA", "Logs"])
+        self.make_result_dir(["1.Orthologue", "2.MSA", "3.PhylogeneticTree", "FormatFASTA", "logs"])
         self.format_fasta_multi()
         self.gene_predict()
         self.orthologue()
@@ -479,6 +511,7 @@ class PhyloCORE(PhyloWGS):
         self.remove_intermedia()
         self.upload()
         self.report()
+        self.zip_result()
         logging.info("溯源进化树>核心基因流程: 分析完成!")
 
 
@@ -492,7 +525,7 @@ class PhyloSNPFQ(PhyloSNP):
     def __init__(self, infile):
         super().__init__(infile)
         self.assign_soft_abspath()
-        self.commands = list() # 总脚本中的所有命令列表
+        self.cmds = list() # 总脚本中的所有命令列表
         
     def assign_soft_abspath(self):
         """软件路径都绑在self特征上"""
@@ -513,23 +546,25 @@ class PhyloSNPFQ(PhyloSNP):
         for name in self.dict_sample:
             gh = open(f"{_shell_dir}/{name}.sh", "wt", encoding="utf-8", newline="")
             gh.write(f"export PATH={snippy_path}:$PATH\n")
-            if len(self.dict_sample[name]) == 1:
+            if len(self.dict_sample[name]) == 1: # 样本列表，一个样本SE
                 cml = f"{self.snippy} --se {self.dict_sample[name][0]} --ref {self.reference} "\
                     f"--cpus {self.thread} --force --prefix {name} --outdir {self.outdir}/1.Variants/{name}"
-            elif len(self.dict_sample[name]) == 2:
-                cml = f"{self.snippy} --R1 {self.dict_sample[name][0]} --R2 {self.dict_sample[name][1]} --ref {self.reference} "\
-                    f"--cpus {self.thread} --force --prefix {name} --outdir {self.outdir}/1.Variants/{name}"
+            elif len(self.dict_sample[name]) == 2: # # 样本列表，两个样本PE
+                cml = f"{self.snippy} --R1 {self.dict_sample[name][0]} --R2 {self.dict_sample[name][1]} \
+                        --ref {self.reference} --cpus {self.thread} --force \
+                        --prefix {name} --outdir {self.outdir}/1.Variants/{name}"
             else:
                 logging.error("样本列表数量错误!")
                 raise Exception
             gh.write(cml+"\n")
             hh.write(f"bash {_shell_dir}/{name}.sh "
-            f"> {self.outdir}/Logs/1.Variant_{name}.sh.out 2> {self.outdir}/Logs/1.Variant_{name}.sh.err\n")
+                    f"> {self.outdir}/logs/1.Variant_{name}.sh.out 2> {self.outdir}/logs/1.Variant_{name}.sh.err\n")
             gh.close()
         hh.close()
-        self.commands.append("# 并行跑snippy")
-        self.commands.append(f"{self.python} {self.dir_bin}/kparallel.py -p {self.parallel} {self.outdir}/Shell/snippy_multi.sh "
-        f"> {self.outdir}/Logs/snippy_multi.out 2> {self.outdir}/Logs/snippy_multi.err")
+        self.cmds.append("# 并行跑snippy")
+        self.cmds.append(f"{self.python} {self.dir_bin}/kparallel.py -p {self.parallel} \
+                            {self.outdir}/Shell/snippy_multi.sh \
+                            > {self.outdir}/logs/snippy_multi.out 2> {self.outdir}/logs/snippy_multi.err")
 
     def merge_vcf(self):
         self.mylog.info("合并变异文件")
@@ -537,67 +572,88 @@ class PhyloSNPFQ(PhyloSNP):
         with open(file_merge_vcf, "wt", encoding="utf-8", newline="") as gh:
             for samp in self.dict_sample.keys():
                 gh.write( f"{self.outdir}/1.Variants/{samp}/{samp}.vcf.gz\n")
-        self.commands.append("# 合并变异文件")
-        self.commands.append(f"{self.bcftools} merge -m snps -f PASS,. --force-samples "
-        f"--output-type v --file-list {file_merge_vcf} -o {self.outdir}/2.MergeVCF/{self.library}.vcf "
-        f"2> {self.outdir}/Logs/bcftools_merge.err")
+        self.cmds.append("# 合并变异文件")
+        self.cmds.append(f"{self.bcftools} merge -m snps -f PASS,. --force-samples "
+                        f"--output-type v --file-list {file_merge_vcf} "
+                        f"-o {self.outdir}/2.MergeVCF/{self.library}.vcf "
+                        f"2> {self.outdir}/logs/bcftools_merge.err")
 
     def build_tree(self):
         self.mylog.info("进化树构建")
-        self.commands.append("# 进化树构建")
-        self.commands.append(f"{self.python} {self.dir_bin}/vcf2phylip.py -m 1 "
-        f"-i {self.outdir}/2.MergeVCF/{self.library}.vcf --output-folder {self.outdir}/3.PhylogeneticTree "
-        f"> {self.outdir}/Logs/vcf2phylip.out 2> {self.outdir}/Logs/vcf2phylip.err")
-        self.commands.append(f"{self.fasttree} -nt {self.outdir}/3.PhylogeneticTree/{self.library}.min1.phy "
-        f"> {self.outdir}/3.PhylogeneticTree/{self.library}.tre 2> {self.outdir}/Logs/fasttree.err")
-        self.commands.append(f"{self.Rscript} {self.dir_bin}/tree.R {self.outdir}/3.PhylogeneticTree/{self.library}.tre "
-        f"> {self.outdir}/Logs/rtree.out 2> {self.outdir}/Logs/rtree.err")
-        self.commands.append(f"{self.python} {self.dir_bin}/magick.py {self.magick} {self.outdir}/3.PhylogeneticTree "
-        f"> {self.outdir}/Logs/magick.out 2> {self.outdir}/Logs/magick.err")
+        # [220616] vcf2phylip.py -m 参数调整,针对真菌细菌.
+        # [220728] vcf2phylip.py 加入--fasta参数,fasttree用.fasta建树
+        if self.kindom == "virus": # 病毒
+            min_samples_locus = 1
+        else: # 细菌真菌
+            min_samples_locus = len(self.dict_sample.keys())
+        self.cmds.append("# 进化树构建")
+        self.cmds.append(f"{self.python} {self.dir_bin}/vcf2phylip.py -m {min_samples_locus} "
+                        f"--fasta -i {self.outdir}/2.MergeVCF/{self.library}.vcf "
+                        f"--output-folder {self.outdir}/3.PhylogeneticTree "
+                        f"> {self.outdir}/logs/vcf2phylip.out 2> {self.outdir}/logs/vcf2phylip.err")
+        self.cmds.append(f"{self.fasttree} "
+                        f"-nt {self.outdir}/3.PhylogeneticTree/{self.library}.min{min_samples_locus}.fasta "
+                        f"> {self.outdir}/3.PhylogeneticTree/{self.library}.tre 2> {self.outdir}/logs/fasttree.err")
+        self.cmds.append(f"{self.Rscript} {self.dir_bin}/tree.R {self.outdir}/3.PhylogeneticTree/{self.library}.tre "
+                        f"> {self.outdir}/logs/rtree.out 2> {self.outdir}/logs/rtree.err")
+        self.cmds.append(f"{self.python} {self.dir_bin}/magick.py {self.magick} {self.outdir}/3.PhylogeneticTree "
+                        f"> {self.outdir}/logs/magick.out 2> {self.outdir}/logs/magick.err")
 
     def remove_intermedia(self):
         self.mylog.info("删除中间文件")
-        self.commands.append("# 删除中间文件")
-        self.commands.append(f"rm -r {self.outdir}/1.Variants/*/ref*")
+        self.cmds.append("# 删除中间文件")
+        self.cmds.append(f"rm -r {self.outdir}/1.Variants/*/ref*")
     
     def upload(self):
         self.mylog.info("上传数据")
         tree_figs = ["rectangular", "rectangular_bl", "slanted", "circular"]
-        self.commands.append("# 上传数据")
-        self.commands.append(f"ln -sf {self.outdir}/2.MergeVCF/{self.library}.vcf {self.outdir}/Upload/2.MergeVCF\n"
-        f"ln -sf {self.outdir}/3.PhylogeneticTree/{self.library}.tre {self.outdir}/Upload/3.PhylogeneticTree")
+        self.cmds.append(f"""
+# 上传数据
+cp -f {self.outdir}/2.MergeVCF/{self.library}.vcf {self.outdir}/Upload/2.MergeVCF
+cp -f {self.outdir}/3.PhylogeneticTree/{self.library}.tre {self.outdir}/Upload/3.PhylogeneticTree
+        """)
         for tf in tree_figs:
-            self.commands.append(f"ln -sf {self.outdir}/3.PhylogeneticTree/{tf}.png {self.outdir}/Upload/3.PhylogeneticTree\n"
-            f"ln -sf {self.outdir}/3.PhylogeneticTree/{tf}.svg {self.outdir}/Upload/3.PhylogeneticTree")
+            self.cmds.append(f"""
+cp -f {self.outdir}/3.PhylogeneticTree/{tf}.png {self.outdir}/Upload/3.PhylogeneticTree
+cp -f {self.outdir}/3.PhylogeneticTree/{tf}.svg {self.outdir}/Upload/3.PhylogeneticTree
+            """)
 
     def report(self):
         self.mylog.info("生成报告")
-        self.commands.append("# 生成报告")
-        self.commands.append(f"{self.perl} {self.dir_bin}/report.pl {self.outdir}/Upload snp "
-        f"> {self.outdir}/Logs/report.out 2> {self.outdir}/Logs/report.err")
+        self.cmds.append("# 生成报告")
+        self.cmds.append(f"{self.perl} {self.dir_bin}/report.pl {self.outdir}/Upload snp "
+                        f"> {self.outdir}/logs/report.out 2> {self.outdir}/logs/report.err")
+
+    def zip_result(self):
+        self.mylog.info("结果压缩包")
+        self.cmds.append("# 结果压缩包")
+        self.cmds.append(f"{self.python} {self.dir_bin}/zip_dir.py {self.outdir}/Upload {self.outdir}/{self.library}.zip "
+                        f"> {self.outdir}/logs/zip_dir.out 2> {self.outdir}/logs/zip_dir.err")
 
     def myrun(self, runbool=False):
         """运行步骤"""
+        self.mylog.info("运行总脚本")
         all_script = f"{self.outdir}/Shell/all.sh"
         with open(all_script, "wt", encoding="utf-8", newline="") as gh:
-            for cmd in self.commands:
+            for cmd in self.cmds:
                 gh.write(cmd+"\n")
         if runbool: # 是否执行
             res = run(f"bash {all_script}", stdout=PIPE, stderr=PIPE, shell=True, encoding="utf-8")
-            with open(f"{self.outdir}/Logs/all.sh.out", "wt", encoding="utf-8", newline="") as gh:
+            with open(f"{self.outdir}/logs/all.sh.out", "wt", encoding="utf-8", newline="") as gh:
                 gh.write(res.stdout)
-            with open(f"{self.outdir}/Logs/all.sh.err", "wt", encoding="utf-8", newline="") as hh:
+            with open(f"{self.outdir}/logs/all.sh.err", "wt", encoding="utf-8", newline="") as hh:
                 hh.write(res.stderr)
 
     def execute(self):
         """总的执行脚本"""
         logging.info("溯源进化树>全基因组SNP-FASTQ流程: 开始分析!")
-        self.make_result_dir(["Shell/snippy_multi", "Logs", "1.Variants", "2.MergeVCF", "3.PhylogeneticTree"])
+        self.make_result_dir(["Shell/snippy_multi", "logs", "1.Variants", "2.MergeVCF", "3.PhylogeneticTree"])
         self.snippy_multi()
         self.merge_vcf()
         self.build_tree()
         self.remove_intermedia()
         self.upload()
         self.report()
+        self.zip_result()
         self.myrun(runbool=True)
         logging.info("溯源进化树>全基因组SNP-FASTQ流程: 分析完成!")

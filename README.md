@@ -10,3 +10,6 @@
 
 ### Sars_Cov2_Amplicon
 二代测序新冠扩增子分析流程
+
+### VenusSplitBarcode
+illumin, MGI 数据拆分流程
